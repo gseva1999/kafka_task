@@ -34,7 +34,7 @@ class MyKafkaConsumer:
 
 
 def create_consumer():
-    """Create Kafka producer."""
+    """Create Kafka consumer"""
     consumer = KafkaConsumer(bootstrap_servers=broker, auto_offset_reset='latest',
                              enable_auto_commit=False, group_id=group_id)
     return MyKafkaConsumer(consumer, topic)
