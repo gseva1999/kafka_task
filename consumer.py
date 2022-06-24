@@ -42,28 +42,32 @@ def create_consumer():
 
 my_consumer = create_consumer()
 
+def main():
+    while True:
+        print("Listening...")
+        number = my_consumer.poll_partition(0)
+        key = ""
+        for tp, messages in number.items():
+            for message in messages:
+                key = message.value.decode('utf-8')
+        my_consumer.consumer.commit()
+        key_position = my_consumer.position(0)
+        # my_consumer.seek(0, key_position)
+        my_consumer.seek(1, key_position-1)
+        word = my_consumer.poll_partition(1)
+        value = ""
+        for tp, messages in word.items():
+            for message in messages:
+                value = message.value.decode('utf-8')
+        # my_consumer.seek(1, key_position)
+        # my_consumer.consumer.commit()
+        sample = {key: value}
+        print(sample)
+        with open('result2.json', 'a') as fp:
+            json.dump(sample, fp)
+            fp.write('\n')
+        my_consumer.consumer.commit()
 
-while True:
-    print("Listening...")
-    number = my_consumer.poll_partition(0)
-    key = ""
-    for tp, messages in number.items():
-        for message in messages:
-            key = message.value.decode('utf-8')
-    my_consumer.consumer.commit()
-    key_position = my_consumer.position(0)
-    # my_consumer.seek(0, key_position)
-    my_consumer.seek(1, key_position-1)
-    word = my_consumer.poll_partition(1)
-    value = ""
-    for tp, messages in word.items():
-        for message in messages:
-            value = message.value.decode('utf-8')
-    # my_consumer.seek(1, key_position)
-    # my_consumer.consumer.commit()
-    sample = {key: value}
-    print(sample)
-    with open('result2.json', 'a') as fp:
-        json.dump(sample, fp)
-        fp.write('\n')
-    my_consumer.consumer.commit()
+        
+if __name__ == "__main__":
+    main()
